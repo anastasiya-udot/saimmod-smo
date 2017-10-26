@@ -9,7 +9,7 @@ $(document).ready(function() {
     var request;
 
     var generateNewRequest = function(takt) {
-        var request = new Request(takt);
+        request = new Request(takt);
 
         requests.push(request);
         return request;
@@ -27,7 +27,7 @@ $(document).ready(function() {
         futureState = new State();
 
         if (_.isEmpty(states)) {
-            currentState = futureState;
+            currentState = _.clone(futureState);
             rememberCurrentState()
             continue;
         }
@@ -46,8 +46,6 @@ $(document).ready(function() {
             } else {
                 futureState.setRequestInChannel2(request);
             }
-
-            futureState.setQueue(queue);
         }
 
         if (currentState.isRequestInChannel1()) {
@@ -64,9 +62,9 @@ $(document).ready(function() {
             } else {
                 futureState.setRequestInChannel1(request);
             }
-
-            futureState.setQueue(queue);
         }
+
+        futureState.setQueue(queue);
 
         if (currentState.isSourceBlocked()) {
             request = currentState.getRequestFromBlockedSource();
@@ -99,10 +97,10 @@ $(document).ready(function() {
         return r.isProcessed;
     });
 
-    var requestQueueTime = 0;
+    var requestsQueueTime = 0;
 
     _.each(requests, function(r) {
-        requestQueueTime += r.timeInQueue;
+        requestsQueueTime += r.timeInQueue;
     });
 
     _.each(_.keys(states), function(key) {
@@ -111,10 +109,7 @@ $(document).ready(function() {
 
     var A = requestsProcessed.length / takts;
     var Lq = queue.getCommonLength() / takts;
-    var Wq = requestQueueTime / requests.length;
-
-    delete requests;
-    delete requestsProcessed;
+    var Wq = requestsQueueTime / requests.length;
 
     console.log('A = ' + A + ', Lq = ' + Lq + ', Wq = ' + Wq);
     console.log(states);

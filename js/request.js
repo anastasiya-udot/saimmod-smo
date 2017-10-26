@@ -1,5 +1,5 @@
-function Request(number) {
-    this.number = number;
+function Request(takt) {
+    this.takt = takt;
     this.timeInQueue = 0;
 
     this.isProcessed = false;
