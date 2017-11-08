@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var queue = new Queue(2);
-    var emmiter = new EventEmitter(0.75, 0.7, 0.65);
+    var emmiter = new EventEmmiter(0.75, 0.7, 0.65);
     var takts = 100000;
     var states = {};
     var currentState;

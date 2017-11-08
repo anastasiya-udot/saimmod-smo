@@ -1,4 +1,4 @@
-function IntervalEmitter(intensities) {
+function IntervalEmmiter(intensities) {
 
     this.lambda = intensities.lambda;
     this.mi = intensities.mi;
@@ -11,16 +11,16 @@ function IntervalEmitter(intensities) {
     };
 
     this.getInputInterval = function() {
-        if (this.lambda) {
+        if (this.lambda === undefined) {
             return 0;
         }
-        return this._getInterval(lambda);
+        return this._getInterval(this.lambda);
     };
 
     this.getOutputInterval = function() {
-        if (this.mi) {
+        if (this.mi === undefined) {
             return 0;
         }
-        return this._getInterval(mi);
+        return this._getInterval(this.mi);
     };
 };

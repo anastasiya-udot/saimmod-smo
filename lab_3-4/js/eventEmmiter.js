@@ -1,4 +1,4 @@
-function EventEmitter(p, pi1, pi2) {
+function EventEmmiter(p, pi1, pi2) {
     this.p = p;
     this.pi1 = pi1;
     this.pi2 = pi2;

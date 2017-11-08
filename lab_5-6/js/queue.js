@@ -1,7 +1,7 @@
 function Queue() {
 
     this._queue = [];
-    this.commonLength = 0;
+    this._commonLength = 0;
 
     this.add = function(request) {
         this._queue.unshift(request);
@@ -12,7 +12,7 @@ function Queue() {
     };
 
     this.isEmpty = function() {
-        return this._queue.length;
+        return !this._queue.length;
     };
 
     this.addTimeToRequests = function(time) {
@@ -23,6 +23,14 @@ function Queue() {
     };
 
     this.rememberLength = function() {
-        this.commonLength += this.getLength();
+        this._commonLength += this._queue.length;
+    };
+
+    this.getCommonLength = function() {
+        return this._commonLength;
+    };
+    
+    this.getLength = function() {
+        return this._queue.length;
     };
 }
