@@ -3,6 +3,8 @@ function IntervalEmmiter(intensities) {
     this.lambda = intensities.lambda;
     this.mi = intensities.mi;
 
+    this.sourceIntervals = [];
+
     this._getInterval = function(intensity) {
         var random = Math.random();
         var interval = - 1 / intensity * Math.log(random);
@@ -14,7 +16,10 @@ function IntervalEmmiter(intensities) {
         if (this.lambda === undefined) {
             return 0;
         }
-        return this._getInterval(this.lambda);
+        let interval = this._getInterval(this.lambda);
+        this.sourceIntervals.push(interval);
+
+        return interval;
     };
 
     this.getOutputInterval = function() {

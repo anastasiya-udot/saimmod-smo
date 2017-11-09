@@ -18,7 +18,10 @@ function Queue() {
     this.addTimeToRequests = function(time) {
         _.each(this._queue, function(request) {
             request.timeInQueue += time;
+            request.timeInQueue = Math.round(request.timeInQueue * 100) / 100;
+
             request.timeInSystem += time;
+            request.timeInSystem = Math.round(request.timeInSystem * 100) / 100;
         });
     };
 
