@@ -27,12 +27,9 @@ function startSystem() {
 
     var request;
 
-    for (var timeUnit = 0; timeUnit <= timeUnits; ) {
+    for (var timeUnit = 0; timeUnit < timeUnits; ) {
 
         _.each(queuingSystems, function(queuingSystem) {
-            queuingSystem.addTimeToRequests(timeAdd);
-            queuingSystem.rememberLength();
-
             queuingSystem.updateChannel(timeAdd);
         });
         
@@ -66,6 +63,11 @@ function startSystem() {
 
         timeUnit += timeAdd
         timeUnit = Math.round(timeUnit * 100) / 100;
+
+        _.each(queuingSystems, function(queuingSystem) {
+            queuingSystem.addTimeToRequests(timeAdd);
+            queuingSystem.rememberLength();
+        });
     }
 
     var requestsLength = 0;
@@ -108,6 +110,7 @@ function startSystem() {
     _.each(forIntesity, function(val) {
         sum += val;
     });
+
 
     console.log('lambda = ', sum / forIntesity.length);
 

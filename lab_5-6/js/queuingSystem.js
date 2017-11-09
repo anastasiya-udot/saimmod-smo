@@ -8,7 +8,7 @@ function QueuingSystem(number, mi) {
 
     this.add = function(request) {
         if (this.channel.isEmpty()) {
-             this.channel.add(request);
+            this.channel.add(request);
         } else {
             this.queue.add(request);
         }
@@ -19,13 +19,16 @@ function QueuingSystem(number, mi) {
     };
 
     this.updateChannel = function(time) {
+        if (!this.channel.isEmpty()) {
+            this.channel.updateState(time);
+        }
+
         if (this.channel.isEmpty() && !this.queue.isEmpty()) {
             var tempRequest = this.queue.pop();
 
             this.channel.add(tempRequest);
-        } else if (!this.channel.isEmpty()) {
-            this.channel.updateState(time);
-        }
+        } 
+
     };
 
     this.rememberLength = function() {
