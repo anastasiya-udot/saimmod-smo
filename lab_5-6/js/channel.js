@@ -8,47 +8,27 @@ function Channel(number, mi) {
 
     this.requestsProcessed = [];
 
-    //для перепроверки мю
-    var counter = 0;
-    var reqNumber = 0;
-    this.forIntesity = [];
-
-    var outputTimeCounter = 0;
-    var currentOutputInterval = 0;
-
-    this.add = function(request) {
-        currentOutputInterval = this.emmiter.getOutputInterval();
-        outputTimeCounter = 0;
+    this.add = function(request, timeUnit) {
+        request.outputInterval = this.emmiter.getOutputInterval();
+        request.outputTime = timeUnit + request.outputInterval;
+        request.outputTime = Math.round(request.outputTime * 100) / 100;
         this._request = request;
     };
 
     this.isEmpty = function() {
-        return !this._request;
+        return this._request === undefined;
     };
 
     this.getProcessedRequests = function() {
         return this.requestsProcessed;
     };
 
-    this.updateState = function(time) {
-        outputTimeCounter += time;
-        outputTimeCounter = Math.round(outputTimeCounter * 100) / 100;
+    this.updateState = function(timeUnit) {
 
-        if (outputTimeCounter >= currentOutputInterval) {
-            outputTimeCounter = 0;
+        if (timeUnit >= this._request.outputTime) {
             this.requestsProcessed.push(this._request);
-            reqNumber += 1;
 
             this._request = undefined;
-        }
-
-        counter += time;
-        counter = Math.round(counter * 100) / 100;
-
-        if (counter == 1) {
-            counter = 0;
-            this.forIntesity.push(reqNumber);
-            reqNumber = 0;
         }
     };
 

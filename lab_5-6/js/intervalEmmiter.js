@@ -8,6 +8,7 @@ function IntervalEmmiter(intensities) {
     this._getInterval = function(intensity) {
         var random = Math.random();
         var interval = - 1 / intensity * Math.log(random);
+        //var interval =  1 / intensity *(1/random + 1);
 
         return Math.round(interval * 100) / 100;
     };

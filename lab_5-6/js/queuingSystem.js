@@ -6,9 +6,18 @@ function QueuingSystem(number, mi) {
 
     this._commonLength = 0;
 
-    this.add = function(request) {
+    this._state = {};
+
+    this.add = function(request, timeUnit) {
         if (this.channel.isEmpty()) {
-            this.channel.add(request);
+            if (!this.queue.isEmpty()) {
+                 var tempRequest = this.queue.pop();
+
+                this.channel.add(tempRequest, timeUnit);
+                this.queue.add(request);
+                return;
+            }
+            this.channel.add(request, timeUnit);
         } else {
             this.queue.add(request);
         }
@@ -18,33 +27,48 @@ function QueuingSystem(number, mi) {
         return this._commonLength;
     };
 
-    this.updateChannel = function(time) {
+    this.updateChannel = function(timeUnit) {
         if (!this.channel.isEmpty()) {
-            this.channel.updateState(time);
+            this.channel.updateState(timeUnit);
         }
 
         if (this.channel.isEmpty() && !this.queue.isEmpty()) {
             var tempRequest = this.queue.pop();
 
-            this.channel.add(tempRequest);
+            this.channel.add(tempRequest, timeUnit);
         } 
 
     };
 
-    this.rememberLength = function() {
-        this._commonLength += this.queue.getLength();
-
+    this.getLength = function() {
+        var length = this.queue.getLength();
+        
         if (!this.channel.isEmpty()) {
-            this._commonLength += 1;
+            length += 1;
         }
+
+        return length;
+    };
+
+    this.rememberLength = function() {
+        this._commonLength += this.getLength();
+
         this.queue.rememberLength();
     }
 
-    this.addTimeToRequests = function(time) {
-        this.queue.addTimeToRequests(time);
+    this.rememberState = function(time) {
+        var length = this.getLength();
 
-        if (!this.channel.isEmpty()) {
-            this.channel.addSystemTimeToRequest(time);
+        if (this._state[length] === undefined) {
+            this._state[length] = time;
+        } else {
+            this._state[length] += time;
         }
+
+        this._state[length] = Math.round(this._state[length] * 100) / 100;
+    };
+
+    this.getState = function() {
+        return this._state;
     };
 }

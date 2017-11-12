@@ -1,4 +1,7 @@
 function Request() {
-    this.timeInQueue = 0;
-    this.timeInSystem = 0;
+    this.inputTime = 0;
+    this.outputTime = 0;
+
+    this.outputInterval = 0;
+    this.inputInterval = 0;
 }

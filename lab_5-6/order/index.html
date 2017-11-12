@@ -1,0 +1,39 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Вероятности</title>
+</head>
+<body>
+    <script>
+        var probabilities = [0.024, 0.046, 0.067, 0.068, 0.064, 0.061, 0.058, 0.055,
+        0.052, 0.049, 0.046, 0.043, 0.04, 0.038, 0.035, 0.033, 0.03, 0.028, 0.025,
+        0.023, 0.021, 0.019, 0.016, 0.014, 0.012, 0.01, 0.009, 0.006, 0.005, 0.003,
+        0, 0, 0];
+        var resultProbabilities = [];
+
+        function sum(start, finish, probabilities) {
+            var sum = 0;
+
+            for (var j = start; j <= finish; j++) {
+                var probability = probabilities[j] || 0;
+
+                sum += probability;
+            }
+
+            return sum;
+        }
+
+        probabilities.forEach(function(probability, index) {
+           var start = index * 3;
+           var finish = index * 4 - 1;
+           
+           resultProbabilities.push(sum(start, finish, probabilities));
+           console.log('P' + index + ' = ' + resultProbabilities[index]);
+        });
+
+        console.log(sum(0, resultProbabilities.length - 1, resultProbabilities));
+    </script>
+</body>
+</html>

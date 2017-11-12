@@ -17,57 +17,41 @@ function startSystem() {
     var queuingSystems = [QS1, QS2, QS3];
     var currentIndexQS = 0;
 
-    var inputTimeCounter = 0;
-    var currentInputInterval = emmiter.getInputInterval();
-
     //для перепроверки лямбда
     var counter = 0;
     var reqNumber = 0;
     var forIntesity = [];
 
-    var request;
+    var request = new Request();
+
+    request.inputInterval = emmiter.getInputInterval();
+    request.inputTime = request.inputInterval;    
 
     for (var timeUnit = 0; timeUnit < timeUnits; ) {
 
         _.each(queuingSystems, function(queuingSystem) {
-            queuingSystem.updateChannel(timeAdd);
+            queuingSystem.rememberLength();
+            queuingSystem.rememberState(timeAdd);
+            queuingSystem.updateChannel(timeUnit);
         });
-        
-        if (inputTimeCounter >= currentInputInterval) {
-            inputTimeCounter = 0;
-            currentInputInterval = emmiter.getInputInterval();
 
-            request = new Request();
-            
-            queuingSystems[currentIndexQS].add(request);
-            reqNumber += 1;
+               
+        if (timeUnit >= request.inputTime) {
+            queuingSystems[currentIndexQS].add(request, timeUnit);
 
             currentIndexQS += 1;
             if (currentIndexQS == n) {
                 currentIndexQS = 0;
             }
+
+            request = new Request();
+            request.inputInterval = emmiter.getInputInterval();
+            request.inputTime = timeUnit + request.inputInterval;
+            request.inputTime = Math.round(request.inputTime * 100) / 100;
         }
-
-        //для перепроверки лямбда
-        counter += timeAdd;
-        counter = Math.round(counter * 100) / 100;
-
-        if (counter == 1) {
-            counter = 0;
-            forIntesity.push(reqNumber);
-            reqNumber = 0;
-        }
-
-        inputTimeCounter += timeAdd;
-        inputTimeCounter = Math.round(inputTimeCounter * 100) / 100;
 
         timeUnit += timeAdd
         timeUnit = Math.round(timeUnit * 100) / 100;
-
-        _.each(queuingSystems, function(queuingSystem) {
-            queuingSystem.addTimeToRequests(timeAdd);
-            queuingSystem.rememberLength();
-        });
     }
 
     var requestsLength = 0;
@@ -78,19 +62,35 @@ function startSystem() {
     var commonTimeInQueue = 0;
     var commonQueueLength = 0;
 
+    var commonState = {};
+
 
     _.each(queuingSystems, function(queuingSystem) {
         var requests = queuingSystem.channel.getProcessedRequests();
+        var state = queuingSystem.getState();
+
+        console.log('requests.length ' + queuingSystem.number + '  ' + requests.length);
 
         requestsLength += requests.length; 
 
         _.each(requests, function(request) {
-            commonTimeInQueue += request.timeInQueue;
-            commonTimeInQueue = Math.round(commonTimeInQueue * 100) / 100;
-        
-            commonTimeInSystem += request.timeInSystem;
+            var timeInSystem = request.outputTime - request.inputTime;
+
+            commonTimeInSystem += timeInSystem;
             commonTimeInSystem = Math.round(commonTimeInSystem * 100) / 100;
+
+            commonTimeInQueue += timeInSystem - request.outputInterval;
+            commonTimeInQueue = Math.round(commonTimeInQueue * 100) / 100;
         });
+
+        _.each(state, function(time, requestsNumber) {
+            if (commonState[requestsNumber] === undefined) {
+                commonState[requestsNumber] = time;
+            } else {
+                commonState[requestsNumber] += time;
+            }
+        });
+        
 
         commonSystemLength += queuingSystem.getCommonLength();
         commonSystemLength = Math.round(commonSystemLength * 100) / 100;
@@ -99,38 +99,16 @@ function startSystem() {
         commonQueueLength = Math.round(commonQueueLength * 100) / 100;
     });
 
+    _.each(commonState, function(time, requestsNumber) {
+        console.log('P' + requestsNumber + ' = ' + time / n / (timeUnits / timeAdd));
+    });
+
     console.log('Lq = ', commonQueueLength / n / (timeUnits / timeAdd));
     console.log('Ls = ', commonSystemLength / n / (timeUnits / timeAdd));
 
     console.log('Wq = ', commonTimeInQueue / requestsLength);
     console.log('Ws = ', commonTimeInSystem / requestsLength);
 
-    var sum = 0;
-
-    _.each(forIntesity, function(val) {
-        sum += val;
-    });
-
-
-    console.log('lambda = ', sum / forIntesity.length);
-
-    sum = 0;
-
-    _.each(QS1.channel.forIntesity, function(val) {
-        sum += val;
-    });
-
-    console.log('mi = ', sum / QS1.channel.forIntesity.length);
-
-    sum = 0;
-    
-   /* _.each(emmiter.sourceIntervals, function(val) {
-        sum += val;
-        sum = Math.round(sum * 100) / 100;
-    });
-
-    console.log('lambda= ', 1 / sum * emmiter.sourceIntervals.length);
-    */
 
     delete Q1;
     delete Q2;
